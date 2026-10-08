@@ -6,6 +6,7 @@ from fred.src import utils
 from fred.src.heatmap import create_heatmap
 import copy
 import os
+from subprocess import run
 from jinja2 import Template
 
 template = Template(
@@ -372,7 +373,8 @@ class Generate(Input):
                         {part: self.result_dict[part]}, self.key_yaml
                     )
                     for elem in plot:
-                        if elem[1] is not None:
+                        gioHTML = run("gio mime x-scheme-handler/http",capture_output=True, shell=True, text=True)
+                        if elem[1] is not None and gioHTML.returncode == 0 and "No default applications" not in gioHTML.stdout:
                             elem[1].show()
                 else:
                     print(self.get_summary(self.result_dict[part]))
@@ -391,6 +393,9 @@ class Generate(Input):
                 self.fill_key(elem, fill_val, self.result_dict)
 
         self.result_dict["version"] = utils.get_fred_version()
+
+        # Remove the cached genes from the result_dict
+        self.result_dict.pop("ncbi_genes",None)
 
         # print validation report
         # print(self.get_validation(self.result_dict))

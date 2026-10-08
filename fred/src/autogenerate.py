@@ -249,7 +249,11 @@ class Autogenerate:
             len(list(utils.find_keys(experimental_factors, "gene"))) > 0
             or len(list(utils.find_values(experimental_factors, "gene"))) > 0
         ):
-            gene_whitelist = utils.get_whitelist("gene", self.gen.result_dict)
+            gene_whitelist = {}
+            # gene_whitelist = utils.get_whitelist("gene", self.gen.result_dict)
+            factors=[a['factor'] for a in experimental_factors]
+            if 'gene_editing' in factors:
+                gene_whitelist = self.gen.result_dict.get("ncbi_genes",utils.get_whitelist("gene", self.gen.result_dict))
             double = gene_whitelist["double"] if "double" in gene_whitelist else []
         return utils.create_filenames(self.gen.result_dict, double, self.position, {})
 
