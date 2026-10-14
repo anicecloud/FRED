@@ -34,4 +34,6 @@ class Edit(Generate):
                 self.fill_key(elem, fill_val, self.result_dict)
 
         self.result_dict["version"] = utils.get_fred_version()
+        # Remove the cached genes from the result_dict
+        self.result_dict.pop("ncbi_genes",None)
         utils.save_as_yaml(self.result_dict, self.path)

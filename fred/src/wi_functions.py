@@ -624,6 +624,9 @@ def add_nerd(path, nerd_dict, structure):
         return False
     metadata["project"]["nerd"].append(nerd_dict)
     metadata["version"] = utils.get_fred_version()
+    
+    # Remove the cached genes from the result_dict
+    metadata.pop("ncbi_genes",None)
     utils.save_as_yaml(metadata, path)
     return True
 

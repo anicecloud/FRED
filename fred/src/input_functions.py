@@ -1,11 +1,13 @@
 import os
 from fred.src import utils
 from fred.src.exceptions import GoBackSignal, WhitelistSplitError
+from fred.src.ncbi_datasets import ncbi_search
 import datetime
 from tabulate import tabulate
 import readline
 import copy
 import re
+from subprocess import run
 
 
 class WhitelistCompleter:
@@ -28,7 +30,10 @@ class Input:
         self.filename = filename
         self.key_yaml = key_yaml
         self.result_dict = {}
-        self.size = os.get_terminal_size().columns
+        try:
+            self.size = os.get_terminal_size().columns
+        except OSError:
+            self.size = 80
         self.conditions = {}
         self.publications = {}
         self.generate_end = []
@@ -48,6 +53,19 @@ class Input:
         # read in whitelist if the key has one or set the whitelist to None
         if structure["whitelist"]:
             whitelist = utils.get_whitelist(key, self.result_dict, whitelist_path=self.whitelis_path)
+            f=run("which datasets",capture_output=True, shell=True, text=True)
+            if key == "organism" and not f.returncode:
+                whitelist["whitelist"].append(f"Search for other {key} in the NCBI database")
+            elif key == "reference_genome" and not f.returncode:
+                tax_id = self.result_dict['experimental_setting'][0]['organism']['taxonomy_id']
+                org_reference_genomes = ncbi_search(key,tax_id=tax_id)
+                if org_reference_genomes:
+                    whitelist["whitelist"].update(org_reference_genomes)
+            elif key == "strain" and not f.returncode:
+                print(f"---\nSelect Strains\n---")
+                whitelist["whitelist"].append(f"Write in a different {key}")
+            elif key == "organism":
+                print(f"---\nThe NCBI Datasets command-line tools could not be found in the PATH, please make sure they are installed in the working environment if you wish to search for organisms in the NCBI dataset.\n")
         else:
             whitelist = None
 
@@ -338,7 +356,14 @@ class Input:
             raw = input()
             if raw.strip() == "!back":
                 raise GoBackSignal()
-            value = whitelist[int(raw) - 1]
+            f=run("which datasets",capture_output=True, shell=True, text=True)
+            if "organism" in header and not f.returncode and int(raw) == len(whitelist):
+                value = ncbi_search("organism")
+            elif "strain" in header and  int(raw) == len(whitelist):
+                print(f"Write strain of organism: ")
+                value = input()
+            else:
+                value = whitelist[int(raw) - 1]
 
         # redo the input prompt if the user input is not an integer
         except (IndexError, ValueError):
@@ -422,6 +447,10 @@ class Input:
 
             # test if the whitelist is not None
             if whitelist is not None:
+
+                if item == "strain":
+                    print(f"---\nSelect Strains\n---")
+                    whitelist["whitelist"].append(f"Write in a different {item}")
 
                 # test if autocompletion is needed (for whitelists longer than 30)
                 if len(whitelist["whitelist"]) > 30:
@@ -686,6 +715,11 @@ class Input:
         # promt user input for a comma divided list
         input_list = input()
 
+        value = False
+        if "Write in a different strain" in options and str(len(options)) in input_list:
+            print(f"Write strain of organism: ")
+            value = input()
+
         # if terminable is set to True and the user inputs 'n', nothing is returned
         if terminable and input_list.lower() == "n":
             return None
@@ -701,6 +735,9 @@ class Input:
                     input_list = [
                         options[int(i.strip()) - 1] for i in input_list.split(",")
                     ]
+                    if value:
+                        input_list.remove("Write in a different strain")
+                        input_list.append(value)
 
                 except (IndexError, ValueError):
 

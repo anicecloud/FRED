@@ -10,6 +10,7 @@ import yaml
 from yaml import CLoader as Loader, CDumper as Dumper
 
 from fred.src.exceptions import WhitelistSplitError, WhitelistJoinError, MetadataVersionError
+from fred.src.ncbi_datasets import ncbi_search
 
 
 def _str_representer(dumper, data):
@@ -488,10 +489,12 @@ def get_whitelist(
         elif whitelist["whitelist_type"] == "depend":
             depend = list(find_keys(filled_object, whitelist["ident_key"]))
             depend_delimiter = " "
+            find_in_ncbi = False
             if len(depend) == 0:
                 if whitelist["ident_key"] == "organism_name":
                     depend = list(find_keys(filled_object, "organism"))
             if whitelist["ident_key"] == "organism_name":
+                tax_id = list(find_keys(filled_object, "taxonomy_id"))
                 organism_whitelist = get_whitelist(
                     "organism",
                     filled_object,
@@ -500,13 +503,25 @@ def get_whitelist(
                 )
                 if organism_whitelist:
                     depend_delimiter = organism_whitelist.get("delimiter", " ")
+                if (depend[-1]+depend_delimiter+' '+tax_id[-1]) not in organism_whitelist["whitelist"]:
+                    find_in_ncbi = True
             if len(depend) > 0:
-                whitelist = read_depend_whitelist(
-                    whitelist["whitelist"],
-                    split_header_value(depend[0], depend_delimiter)[0],
-                    whitelist_object=whitelist_object,
-                    whitelist_path=whitelist_path,
-                )
+                if not find_in_ncbi:
+                    whitelist = read_depend_whitelist(
+                        whitelist["whitelist"],
+                        split_header_value(depend[0], depend_delimiter)[0],
+                        whitelist_object=whitelist_object,
+                        whitelist_path=whitelist_path,
+                    )
+                else:
+                    if not filled_object.get("ncbi_genes") or not filled_object["ncbi_genes"].get(str(tax_id[-1])):
+                        whitelist = ncbi_search("genes",tax_id=tax_id[-1])
+                        # Cache the genes so the search is carried out only once
+                        if not filled_object.get("ncbi_genes"):
+                            filled_object["ncbi_genes"] = {}
+                        filled_object["ncbi_genes"][str(tax_id[-1])] = whitelist
+                    else:
+                        whitelist = filled_object["ncbi_genes"][str(tax_id[-1])]
             else:
                 if all_plain:
                     new_whitelist = []
@@ -637,9 +652,14 @@ def create_sample_names(metafile, old_sample_names, position, read_in_whitelists
         organism = list(find_keys(setting, "organism_name"))
         if len(setting_id) > 0 and len(organism) > 0:
             setting_id = setting_id[0]
-            organism = organisms[organism[0]]
+            if not organisms.get(organism[0]):
+                name = organism[0].lower().split()
+                organism = name[0][0]+name[1][0:2]
+            else:
+                organism = organisms[organism[0]]
             used_techs = None
             for techs in techniques[0]:
+                techs = techniques[0].get(techs,techs)
                 if techs["setting"] == setting_id:
                     used_techs = techs["technique"]
                     break
@@ -832,6 +852,7 @@ def create_filenames(
                 local_index = 1
             used_techs = None
             for techs in techniques[0]:
+                techs = techniques[0].get(techs,techs)
                 if techs["setting"] == setting_id:
                     used_techs = techs["technique"]
                     break
