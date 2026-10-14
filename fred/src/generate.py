@@ -162,7 +162,7 @@ class Generate(Input):
                         and 'special_case' in v
                         and v['special_case'].get('edit') == 'not removable'
                     ]
-                    for i in range(len(self.setting_ids)):
+                    for i in range(len(self.setting_ids) if len(values)>=len(self.setting_ids) else len(values)):
                         preserved = {}
                         if isinstance(values[i], dict):
                             for k in not_removable_keys:
