@@ -369,9 +369,9 @@ class Autogenerate:
         structure["list"] = False
         for i in range(len(all_settings)):
             self.gen.parse_lists(
-                structure, self.position + [i], 2, self.gen.result_dict
+                structure, self.position + [str(i)], 2, self.gen.result_dict
             )
         return utils.find_position(self.gen.result_dict, self.position)
 
     def get_setting(self):
-        return self.gen.setting_ids[self.position[-2]]
+        return self.gen.setting_ids[int(self.position[-2])]

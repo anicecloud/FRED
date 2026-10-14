@@ -659,6 +659,7 @@ def create_sample_names(metafile, old_sample_names, position, read_in_whitelists
                 organism = organisms[organism[0]]
             used_techs = None
             for techs in techniques[0]:
+                techs = techniques[0].get(techs,techs)
                 if techs["setting"] == setting_id:
                     used_techs = techs["technique"]
                     break
@@ -851,6 +852,7 @@ def create_filenames(
                 local_index = 1
             used_techs = None
             for techs in techniques[0]:
+                techs = techniques[0].get(techs,techs)
                 if techs["setting"] == setting_id:
                     used_techs = techs["technique"]
                     break
