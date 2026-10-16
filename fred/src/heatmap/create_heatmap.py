@@ -40,6 +40,8 @@ def get_heatmap(
     if len(techniques) > 0:
         techniques = techniques[0]
         for elem in techniques:
+            if isinstance(techniques, dict):
+                elem = techniques[elem]
             try:
                 sett_id = elem["setting"]
                 try:
