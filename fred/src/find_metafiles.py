@@ -15,7 +15,7 @@ from tabulate import tabulate
 try:
     size = os.get_terminal_size()
 except OSError:
-    size = 80
+    size = os.terminal_size([80,80])
 
 
 def find_projects(key_yaml, dir_path, search, return_dict, skip_validation=False, filename="_metadata"):
@@ -37,7 +37,6 @@ def find_projects(key_yaml, dir_path, search, return_dict, skip_validation=False
     metafiles, validation_reports = file_reading.iterate_dir_metafiles(
         key_yaml, [dir_path], filename=filename, return_false=True, skip_validation=skip_validation
     )
-
     # put round brackets around the search string
     search = "(" + search + ")"
 
@@ -196,6 +195,8 @@ def print_summary(result, output):
                 techniques = elem[key]["technical_details"]["techniques"]
                 tech_list = []
                 for tech in techniques:
+                    if isinstance(techniques, dict):
+                        tech = techniques[tech]
                     tech_list += tech["technique"]
                 project_res["technique"] = list(set(tech_list))
             except:
