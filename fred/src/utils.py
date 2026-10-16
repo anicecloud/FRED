@@ -503,9 +503,9 @@ def get_whitelist(
                 )
                 if organism_whitelist:
                     depend_delimiter = organism_whitelist.get("delimiter", " ")
+            if len(depend) > 0:
                 if (depend[-1]+depend_delimiter+' '+tax_id[-1]) not in organism_whitelist["whitelist"]:
                     find_in_ncbi = True
-            if len(depend) > 0:
                 if not find_in_ncbi:
                     whitelist = read_depend_whitelist(
                         whitelist["whitelist"],
