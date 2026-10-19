@@ -148,6 +148,8 @@ def _build_tech_lookup_list(metadata):
     tech_details = metadata.get("technical_details") or {}
     lookup = {}
     for entry in (tech_details.get("techniques") or []):
+        if isinstance(tech_details.get("techniques"),dict):
+            entry = tech_details["techniques"][entry]
         sid = entry.get("setting")
         if sid:
             lookup[sid] = [t for t in (entry.get("technique") or []) if t]
