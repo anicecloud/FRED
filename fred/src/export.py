@@ -29,6 +29,8 @@ def _build_tech_lookup(metadata, tech_type_index):
     techniques = tech_details.get("techniques") or []
     lookup = {}
     for entry in techniques:
+        if isinstance(techniques,dict):
+            entry = tech_details["techniques"][entry]
         sid = entry.get("setting")
         tech_list = entry.get("technique") or []
         if sid:

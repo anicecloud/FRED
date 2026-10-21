@@ -539,6 +539,8 @@ def get_metadata_search_view(metadata_path):
 
     techniques = list(utils.find_keys(metadata, "technique"))
     for elem in techniques:
+        if isinstance(techniques,dict):
+            elem = techniques[elem]
         technique += elem
     technique = list(set(technique))
     res['technique'] = technique
