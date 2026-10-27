@@ -1088,6 +1088,221 @@ technical_details:
           value: null
           whitelist: True
           input_type: select
+        genome_sequencing:
+          mandatory: True
+          list: True
+          display_name: "Genome Sequencing"
+          desc: "Whether SAG, MAG or other genome sequencing technique was performed"
+          input_type: bool
+          whitelist: False
+          value: 
+            analysis_project_type:
+              mandatory: True
+              list: False
+              display_name: "Analysis Project Type"
+              desc: "Single cell genome or genome from metagenome."
+              input_type: select
+              whitelist: True
+              value: "Other"
+            assembly_software:
+              mandatory: True
+              list: False
+              display_name: "Assembly Software"
+              desc: "Tool used for assembly."
+              value: null
+              whitelist: False
+              input_type: short_text
+            annotation_software:
+              mandatory: False
+              list: False
+              display_name: "Annotation Software"
+              desc: "Tool used for annotation."
+              value: null
+              whitelist: True
+              input_type: short_text
+            assembly_quality:
+              mandatory: True
+              list: False
+              display_name: "Assembly Quality"
+              desc: "Finished: Single, validated, contiguous sequence per replicon without gaps or ambiguities with a consensus error rate equivalent to Q50 or better. Assembly statistics*.\nHigh Quality Draft:Multiple fragments where gaps span repetitive regions. Assembly statistics*. Presence of the 23S, 16S and 5S rRNA genes and at least 18 tRNAs.\nMedium Quality Draft:Many fragments with little to no review of assembly other than reporting of standard assembly statistics*.\nLow Quality Draft:Many fragments with little to no review of assembly other than reporting of standard assembly statistics*."
+              input_type: select
+              whitelist: True
+              value: null
+            completeness_score:
+              mandatory: True
+              list: False
+              display_name: "Completeness Score"
+              desc: "Enter the percentage of completion. Completeness score is typically based on either the fraction of markers found as compared to a database or the percent of a genome found as compared to a closely related reference genome:\n- High Quality Draft: >90%\n- Medium Quality Draft: >50%\n- Low Quality Draft: < 50%"
+              input_type: number
+              whitelist: False
+              value: 1
+            contamination_score:
+              mandatory: True
+              list: False
+              display_name: "Contamination Score"
+              desc: "Enter the percentage of contamination. The contamination score is based on the fraction of single-copy genes that are observed more than once in a query genome. Contamination must be below 5% for a SAG or MAG to be deposited into any of the public databases:\n- High Quality Draft: < 5%\n- Medium Quality Draft: < 10%\n- Low Quality Draft: < 10%"
+              input_type: number
+              whitelist: False
+              value: 1
+            completeness_software:
+              mandatory: True
+              list: False
+              display_name: "Completeness Software"
+              desc: "Tool used for completion estimate"
+              input_type: select
+              whitelist: True
+              value: null
+            number_of_contigs:
+              mandatory: False
+              list: False
+              display_name: "Number of contigs"
+              desc: "Total number of contigs in the cleaned/submitted assembly that makes up a given SAG or MAG"
+              input_type: number
+              whitelist: False
+              value: 1
+            16S_recovered:
+              mandatory: False
+              list: False
+              display_name: "16S Recovered"
+              desc: "Can a 16S gene be recovered from the submitted SAG or MAG?"
+              input_type: bool
+              whitelist: False
+              value: null
+            16S_recovery_software:
+              mandatory: False
+              list: False
+              display_name: "16S Recovery Software"
+              desc: "Tool used for 16S extraction"
+              input_type: select
+              whitelist: True
+              value: null
+            number_of_standard_tRNAs_extracted:
+              mandatory: False
+              list: False
+              display_name: "Total Number of tRNAs"
+              desc: "The total number of tRNAs identified from the SAG or MAG"
+              input_type: number
+              whitelist: False
+              value: 0
+            completeness_approach:
+              mandatory: False
+              list: False
+              display_name: "Completeness Approach"
+              desc: "The approach used to determine the completeness of a given SAG or MAG, which would typically make use of a set of conserved marker genes or a closely related reference genome."
+              input_type: select
+              whitelist: True
+              value: null
+            contam_screen_input:
+              mandatory: False
+              list: False
+              display_name: "Contam Screen Input"
+              desc: "The type of sequence data used as input"
+              input_type: select
+              whitelist: True
+              value: null
+            contam_screen_parameters:
+              mandatory: False
+              list: True
+              display_name: "Contam Screen Parameters"
+              desc: "The specific parameters used in the decontamination sofware"
+              input_type: select
+              whitelist: True
+              value: null
+            decontamination_software:
+              mandatory: False
+              list: True
+              display_name: "Contam Screen Software"
+              desc: "Tool(s) used in contaminantion screening"
+              input_type: select
+              whitelist: True
+              value: null
+            sag_metadata:
+              mandatory: True
+              list: False
+              display_name: "SAG"
+              desc: ""
+              special_case:
+                sequencing: "SAG"
+              value:
+                cell_isolation_approach:
+                  mandatory: True
+                  list: False
+                  display_name: "Single Cell Isolation Approach"
+                  desc: "Method used to isolate the cell"
+                  input_type: select
+                  whitelist: True
+                  value: null
+                cell_lysis_approach:
+                  mandatory: True
+                  list: True
+                  display_name: "Single Cell Lysis Approach"
+                  desc: "Method used to free DNA from interior of the cell(s)"
+                  input_type: select
+                  whitelist: True
+                  value: null
+                wga_amp_approach:
+                  mandatory: True
+                  list: False
+                  display_name: "WGA Amp. Approach"
+                  desc: "Method used to amplify genomic DNA in preparation for sequencing"
+                  input_type: select
+                  whitelist: True
+                  value: null
+                cell_lysis_kit_protocol:
+                  mandatory: False
+                  list: False
+                  display_name: "Single Cell Lysis Kit Protocol"
+                  desc: "Method used to amplify genomic DNA in preparation for sequencing"
+                  input_type: short_text
+                  whitelist: False
+                  value: null
+                wga_amp_kit:
+                  mandatory: False
+                  list: False
+                  display_name: "WGA Amp. Kit"
+                  desc: "Kit used to amplify genomic DNA in preparation for sequencing"
+                  input_type: short_text
+                  whitelist: False
+                  value: null
+            mag_metadata:
+              mandatory: True
+              list: False
+              display_name: "MAG"
+              desc: ""
+              special_case:
+                sequencing: "MAG"
+              value:
+                bin_parameters:
+                  mandatory: True
+                  list: True
+                  display_name: "Bin Parameters"
+                  desc: "The parameters that have been applied during the extraction of genomes from metagenomic datasets"
+                  input_type: select
+                  whitelist: True
+                  value: null
+                binning_software:
+                  mandatory: True
+                  list: True
+                  display_name: "Binning Software"
+                  desc: "Tool(s) used for the extraction of genomes from metagenomic datasets"
+                  input_type: select
+                  whitelist: True
+                  value: null
+                reassembly_post_binning:
+                  mandatory: False
+                  list: False
+                  display_name: "Reassembly Post-Binning"
+                  desc: "Has an assembly been performed on a genome bin extracted from a metagenomic assembly?"
+                  input_type: bool
+                  whitelist: False
+                mag_coverage_software:
+                  mandatory: False
+                  list: True
+                  display_name: "MAG Coverage Software"
+                  desc: "Tool(s) used to determine the genome coverage if coverage is used as a binning parameter in the extraction of genomes from metagenomic datasets"
+                  input_type: select
+                  whitelist: True
+                  value: null
         parameters:
           mandatory: False
           list: True

@@ -611,6 +611,8 @@ class Generate(Input):
                     redo = False
 
         else:
+            self.print_header(structure["display_name"], indent)
+            print(utils.print_desc(structure["desc"], size=self.size), "\n")
             if structure["list"] or is_factor:
                 value = self.get_input_list(structure, position[-1])
                 self.fill_key(position, value, return_dict)
@@ -728,6 +730,19 @@ class Generate(Input):
                                 self.field_history.append(
                                     (list(position + [key]), key, merge_structure)
                                 )
+                        elif "sequencing" in structure[key]["special_case"]:
+                            # Skip sections that are specific for a different Analysis Project Type
+                            if structure[key]["special_case"]["sequencing"] not in return_dict["technical_details"]["analysis_runs"][position[-3]]["genome_sequencing"][position[-1]].get("analysis_project_type"):
+                                idx += 1
+                                continue
+                            else:
+                                self.parse_lists(
+                                    structure[key],
+                                    position + [key],
+                                    indent + 1,
+                                    return_dict,
+                                    is_factor=is_factor,
+                                )
                         else:
                             self.parse_lists(
                                 structure[key],
@@ -795,6 +810,12 @@ class Generate(Input):
                                 )
                         elif structure[option]["special_case"]["generated"] == "end":
                             self.generate_end.append(position + [option])
+                    elif (
+                        "special_case" in structure[option]
+                        and "sequencing" in structure[option]["special_case"]
+                        and structure[key]["special_case"]["sequencing"] not in return_dict["technical_details"]["analysis_runs"][position[-3]]["genome_sequencing"][position[-1]].get("analysis_project_type")
+                    ):
+                        continue
                     else:
                         self.parse_lists(
                             structure[option],

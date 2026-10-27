@@ -53,6 +53,9 @@ class Input:
         # read in whitelist if the key has one or set the whitelist to None
         if structure["whitelist"]:
             whitelist = utils.get_whitelist(key, self.result_dict, whitelist_path=self.whitelis_path)
+            if not whitelist:
+                additional_whitelist = os.path.join(os.path.dirname(__file__), "..", "additional_whitelists")
+                whitelist = utils.get_whitelist(key, self.result_dict, whitelist_path=additional_whitelist)
             f=run("which datasets",capture_output=True, shell=True, text=True)
             if key == "organism" and not f.returncode:
                 whitelist["whitelist"].append(f"Search for other {key} in the NCBI database")
@@ -444,6 +447,9 @@ class Input:
 
             # read in whitelist
             whitelist = utils.get_whitelist(item, self.result_dict)
+            if not whitelist:
+                additional_whitelist = os.path.join(os.path.dirname(__file__), "..", "additional_whitelists")
+                whitelist = utils.get_whitelist(item, self.result_dict, whitelist_path=additional_whitelist)
 
             # test if the whitelist is not None
             if whitelist is not None:

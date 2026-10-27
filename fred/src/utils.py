@@ -473,7 +473,7 @@ def get_whitelist(
         and not plain
         and not abbrev
     ):
-        if whitelist["whitelist_type"] == "group":
+        if whitelist.get("whitelist_type") == "group":
             whitelist = read_grouped_whitelist(
                 whitelist,
                 filled_object,
@@ -482,11 +482,11 @@ def get_whitelist(
                 whitelist_path=whitelist_path,
             )
             group = True
-        elif whitelist["whitelist_type"] == "plain":
+        elif whitelist.get("whitelist_type") == "plain":
             plain = True
-        elif whitelist["whitelist_type"] == "abbrev":
+        elif whitelist.get("whitelist_type") == "abbrev":
             abbrev = True
-        elif whitelist["whitelist_type"] == "depend":
+        elif whitelist.get("whitelist_type") == "depend":
             depend = list(find_keys(filled_object, whitelist["ident_key"]))
             depend_delimiter = " "
             find_in_ncbi = False
